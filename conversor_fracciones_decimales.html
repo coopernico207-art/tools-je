@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor Interactivo: Fracción ↔ Decimal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #0891b2;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            padding: 35px;
+            margin-top: 10px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* Switch Mode Toggle */
+        .switch-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            background: var(--primary-light);
+            padding: 6px;
+            border-radius: 50px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #c7d2fe;
+        }
+
+        .switch-btn {
+            padding: 10px 24px;
+            border: none;
+            background: transparent;
+            border-radius: 40px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .switch-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Input Card */
+        .input-section {
+            background: #fafafa;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .fraction-input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 140px;
+        }
+
+        .fraction-input-box input {
+            width: 100%;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            font-family: 'Fira Code', monospace;
+            transition: border-color 0.2s;
+        }
+
+        .fraction-input-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .fraction-divider {
+            width: 100%;
+            height: 4px;
+            background: var(--text);
+            border-radius: 2px;
+        }
+
+        .decimal-input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 220px;
+        }
+
+        .decimal-input-box label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .decimal-input-box input {
+            width: 100%;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            font-family: 'Fira Code', monospace;
+            transition: border-color 0.2s;
+        }
+
+        .decimal-input-box input:focus {
+            border-color: var(--primary);
+        }
+
+        /* Buttons & Examples */
+        .btn-calc {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 36px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-calc:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .examples {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+            align-items: center;
+        }
+
+        .examples span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .chip {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background: var(--primary-light);
+            border-color: #c7d2fe;
+        }
+
+        /* Procedure Section */
+        .procedure-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .procedure-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 10px;
+        }
+
+        .step-block {
+            margin-bottom: 25px;
+        }
+
+        .step-heading {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-number {
+            background: var(--primary-light);
+            color: var(--primary);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* Casita Division Style */
+        .casita-container {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 25px;
+            border-radius: 14px;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.25rem;
+            line-height: 1.4;
+            overflow-x: auto;
+            margin-top: 10px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .casita-grid {
+            display: inline-block;
+            white-space: pre;
+            letter-spacing: 2px;
+        }
+
+        .casita-highlight {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        .casita-subtrahend {
+            color: #f43f5e;
+        }
+
+        .casita-quotient {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        /* Factorization Styles */
+        .factorization-flex {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .factor-table-card {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 15px 25px;
+            min-width: 180px;
+            text-align: center;
+            border: 1px solid #cbd5e1;
+        }
+
+        .factor-table-title {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .factor-table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+        }
+
+        .factor-table td {
+            padding: 4px 12px;
+        }
+
+        .factor-table td.number-col {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .factor-table td.prime-col {
+            text-align: left;
+            border-left: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Fraction Prime Cancelation */
+        .cancel-expression {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .frac-visual {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+        }
+
+        .frac-num {
+            border-bottom: 2px solid var(--text);
+            padding: 2px 8px;
+            text-align: center;
+        }
+
+        .frac-den {
+            padding: 2px 8px;
+            text-align: center;
+        }
+
+        .cancel-prime {
+            position: relative;
+            color: #94a3b8;
+            display: inline-block;
+        }
+
+        .cancel-prime::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -2px;
+            right: -2px;
+            height: 2px;
+            background: var(--danger);
+            transform: rotate(-25deg);
+        }
+
+        .keep-prime {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .result-box {
+            background: var(--primary-light);
+            border: 2px solid #c7d2fe;
+            border-radius: 12px;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-hover);
+            margin-top: 20px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .switch-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .factorization-flex {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Conversor de Fracción y Decimal</h1>
+            <p>Calcula y visualiza el procedimiento paso a paso</p>
+        </header>
+
+        <!-- Mode Switch -->
+        <div class="switch-container">
+            <button class="switch-btn active" id="btn-frac2dec" onclick="setMode('frac2dec')">
+                <span>Fracción ➔ Decimal</span>
+            </button>
+            <button class="switch-btn" id="btn-dec2frac" onclick="setMode('dec2frac')">
+                <span>Decimal ➔ Fracción</span>
+            </button>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <!-- Mode 1: Fraction to Decimal Inputs -->
+            <div id="mode-frac2dec" class="input-group">
+                <div class="fraction-input-box">
+                    <input type="number" id="num-input" placeholder="Num" value="3" min="1" step="1">
+                    <div class="fraction-divider"></div>
+                    <input type="number" id="den-input" placeholder="Den" value="4" min="1" step="1">
+                </div>
+                <button class="btn-calc" onclick="calculateFracToDec()">Calcular con Casita</button>
+                <div class="examples">
+                    <span>Ejemplos rápidos:</span>
+                    <div class="chip" onclick="setFrac(3,4)">3/4</div>
+                    <div class="chip" onclick="setFrac(7,8)">7/8</div>
+                    <div class="chip" onclick="setFrac(1,3)">1/3</div>
+                    <div class="chip" onclick="setFrac(5,6)">5/6</div>
+                    <div class="chip" onclick="setFrac(13,4)">13/4</div>
+                </div>
+            </div>
+
+            <!-- Mode 2: Decimal to Fraction Inputs -->
+            <div id="mode-dec2frac" class="input-group" style="display: none;">
+                <div class="decimal-input-box">
+                    <label for="dec-input">Ingresa el número decimal:</label>
+                    <input type="text" id="dec-input" placeholder="ej. 0.75" value="0.75">
+                </div>
+                <button class="btn-calc" onclick="calculateDecToFrac()">Factorizar y Convertir</button>
+                <div class="examples">
+                    <span>Ejemplos rápidos:</span>
+                    <div class="chip" onclick="setDec('0.75')">0.75</div>
+                    <div class="chip" onclick="setDec('0.625')">0.625</div>
+                    <div class="chip" onclick="setDec('2.4')">2.4</div>
+                    <div class="chip" onclick="setDec('0.125')">0.125</div>
+                    <div class="chip" onclick="setDec('0.35')">0.35</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Procedure Display -->
+        <div id="procedure-card" class="procedure-card">
+            <div class="procedure-title" id="proc-title">
+                📌 Procedimiento Detallado
+            </div>
+            <div id="proc-content">
+                <!-- Dynamic Steps Content -->
+            </div>
+        </div>
+
+        <div class="footer">
+            Herramienta Educativa Interactiva • Desglose de Algoritmo de División y Factorización Prima
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'frac2dec';
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-frac2dec').classList.toggle('active', mode === 'frac2dec');
+            document.getElementById('btn-dec2frac').classList.toggle('active', mode === 'dec2frac');
+
+            document.getElementById('mode-frac2dec').style.display = (mode === 'frac2dec') ? 'flex' : 'none';
+            document.getElementById('mode-dec2frac').style.display = (mode === 'dec2frac') ? 'flex' : 'none';
+
+            document.getElementById('procedure-card').style.display = 'none';
+        }
+
+        function setFrac(n, d) {
+            document.getElementById('num-input').value = n;
+            document.getElementById('den-input').value = d;
+            calculateFracToDec();
+        }
+
+        function setDec(val) {
+            document.getElementById('dec-input').value = val;
+            calculateDecToFrac();
+        }
+
+        // ==========================================
+        // MODO 1: FRACCIÓN A DECIMAL (DIVISIÓN DE CASITA)
+        // ==========================================
+        function calculateFracToDec() {
+            const num = parseInt(document.getElementById('num-input').value);
+            const den = parseInt(document.getElementById('den-input').value);
+
+            if (isNaN(num) || isNaN(den) || den === 0) {
+                alert("Por favor ingresa un numerador y un denominador válido (denominador ≠ 0).");
+                return;
+            }
+
+            const procCard = document.getElementById('procedure-card');
+            const procContent = document.getElementById('proc-content');
+            document.getElementById('proc-title').innerHTML = `📌 Procedimiento: Fracción a Decimal (${num}/${den})`;
+
+            // Algoritmo de división de casita
+            const result = simulateLongDivision(num, den);
+
+            let html = `
+                <div class="step-block">
+                    <div class="step-heading">
+                        <div class="step-number">1</div>
+                        <span>Planteamiento de la División</span>
+                    </div>
+                    <p>Dividimos el numerador <strong>${num}</strong> entre el denominador <strong>${den}</strong>:</p>
+                    <p style="font-family: 'Fira Code', monospace; font-size: 1.1rem; margin-top: 5px; color: var(--primary);">
+                        ${num} ÷ ${den}
+                    </p>
+                </div>
+
+                <div class="step-block">
+                    <div class="step-heading">
+                        <div class="step-number">2</div>
+                        <span>Algoritmo Visual de la División de Casita</span>
+                    </div>
+                    <p>Procedimiento de resta sucesiva y bajada de ceros para obtener los decimales:</p>
+                    <div class="casita-container">
+                        <div class="casita-grid">${result.casitaAscii}</div>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <div class="step-heading">
+                        <div class="step-number">3</div>
+                        <span>Explicación Paso a Paso de la División</span>
+                    </div>
+                    <ul style="padding-left: 20px; line-height: 1.8;">
+                        ${result.explanationSteps.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div class="result-box">
+                    Resultado Final: ${num}/${den} = <span style="color: var(--primary);">${result.finalValue}</span>
+                    ${result.isPeriodic ? '<br><small style="font-weight: normal; font-size: 0.9rem; color: var(--text-muted);">(Es un número decimal periódico)</small>' : ''}
+                </div>
+            `;
+
+            procContent.innerHTML = html;
+            procCard.style.display = 'block';
+        }
+
+        function simulateLongDivision(num, den) {
+            let explanationSteps = [];
+            let intPart = Math.floor(num / den);
+            let rem = num % den;
+
+            explanationSteps.push(`El número ${den} cabe <strong>${intPart}</strong> vez(ces) en el dividendo inicial ${num} con un residuo de <strong>${rem}</strong>.`);
+
+            let digits = [];
+            let quotients = [intPart];
+            let remaindersHistory = [];
+            let seenRemainders = new Map();
+
+            let hasDecimalPoint = false;
+            if (rem !== 0) {
+                hasDecimalPoint = true;
+            }
+
+            let isPeriodic = false;
+            let periodStartIndex = -1;
+
+            let divisionSteps = [];
+
+            let currentRem = rem;
+            let decimalDigitsCount = 0;
+            const maxDecimalDigits = 8;
+
+            while (currentRem !== 0 && decimalDigitsCount < maxDecimalDigits) {
+                if (seenRemainders.has(currentRem)) {
+                    isPeriodic = true;
+                    periodStartIndex = seenRemainders.get(currentRem);
+                    break;
+                }
+                seenRemainders.set(currentRem, decimalDigitsCount);
+
+                let nextDividend = currentRem * 10;
+                let qDigit = Math.floor(nextDividend / den);
+                let prod = qDigit * den;
+                let newRem = nextDividend - prod;
+
+                explanationSteps.push(`Bajamos un 0: convertimos el residuo ${currentRem} en <strong>${nextDividend}</strong>. El ${den} cabe <strong>${qDigit}</strong> veces (${qDigit} × ${den} = ${prod}). Restamos y nos queda un residuo de <strong>${newRem}</strong>.`);
+
+                divisionSteps.push({
+                    prevRem: currentRem,
+                    nextDividend: nextDividend,
+                    qDigit: qDigit,
+                    prod: prod,
+                    newRem: newRem
+                });
+
+                digits.push(qDigit);
+                currentRem = newRem;
+                decimalDigitsCount++;
+            }
+
+            if (currentRem === 0) {
+                explanationSteps.push(`La división es exacta porque el residuo final llegó a <strong>0</strong>.`);
+            } else if (isPeriodic) {
+                explanationSteps.push(`El residuo <strong>${currentRem}</strong> se ha repetido, lo que indica un decimal periódico.`);
+            }
+
+            let decimalStr = intPart.toString() + (hasDecimalPoint ? "." + digits.join('') : "");
+            if (isPeriodic) {
+                decimalStr += "...";
+            }
+
+            let casitaAscii = buildCasitaAscii(num, den, intPart, divisionSteps, decimalStr, isPeriodic);
+
+            return {
+                finalValue: decimalStr,
+                casitaAscii: casitaAscii,
+                explanationSteps: explanationSteps,
+                isPeriodic: isPeriodic
+            };
+        }
+
+        function buildCasitaAscii(num, den, intPart, divisionSteps, finalValueStr, isPeriodic) {
+            const denStr = den.toString();
+            const numStr = num.toString();
+            const quotientStr = finalValueStr;
+
+            const padLeft = denStr.length + 3;
+
+            let lines = [];
+
+            // Line 1: Quotient
+            let lineQuotient = " ".repeat(padLeft) + " " + quotientStr;
+            lines.push(`<span class="casita-quotient">${lineQuotient}</span>`);
+
+            // Line 2: Roof
+            let roofLen = Math.max(numStr.length + 6, quotientStr.length + 2);
+            let lineRoof = " ".repeat(padLeft) + "┌" + "─".repeat(roofLen);
+            lines.push(lineRoof);
+
+            // Line 3: Divisor | Dividend
+            let lineMain = `${denStr} │ ${numStr}`;
+            lines.push(`<span class="casita-highlight">${lineMain}</span>`);
+
+            let indent = padLeft + 1;
+
+            if (divisionSteps.length === 0) {
+                let prod = intPart * den;
+                let lineSub = " ".repeat(indent) + `- ${prod}`;
+                let lineLine = " ".repeat(indent) + "  " + "─".repeat(Math.max(numStr.length, prod.toString().length));
+                let lineRem = " ".repeat(indent) + `  ${num % den}`;
+                lines.push(`<span class="casita-subtrahend">${lineSub}</span>`);
+                lines.push(lineLine);
+                lines.push(lineRem);
+            } else {
+                if (num >= den) {
+                    let firstProd = intPart * den;
+                    let lineSub = " ".repeat(indent) + `- ${firstProd}`;
+                    lines.push(`<span class="casita-subtrahend">${lineSub}</span>`);
+                    lines.push(" ".repeat(indent) + "  " + "─".repeat(numStr.length));
+                }
+
+                let curIndent = indent + 2;
+
+                divisionSteps.forEach((step, idx) => {
+                    let divStr = step.nextDividend.toString();
+                    let prodStr = step.prod.toString();
+                    let remStr = step.newRem.toString();
+
+                    let lineDiv = " ".repeat(curIndent) + `${divStr}`;
+                    let lineProd = " ".repeat(curIndent) + `- ${prodStr}`;
+                    let dashLen = Math.max(divStr.length, prodStr.length + 2);
+                    let lineDash = " ".repeat(curIndent) + "─".repeat(dashLen);
+
+                    lines.push(lineDiv);
+                    lines.push(`<span class="casita-subtrahend">${lineProd}</span>`);
+                    lines.push(lineDash);
+
+                    curIndent += Math.max(0, divStr.length - remStr.length);
+                });
+
+                let finalRem = divisionSteps[divisionSteps.length - 1].newRem;
+                lines.push(" ".repeat(curIndent) + `<span class="casita-highlight">${finalRem}${isPeriodic ? ' (repetido)' : ''}</span>`);
+            }
+
+            return lines.join('\n');
+        }
+
+
+        // ==========================================
+        // MODO 2: DECIMAL A FRACCIÓN (DOS FACTORIZACIONES)
+        // ==========================================
+        function calculateDecToFrac() {
+            const rawInput = document.getElementById('dec-input').value.trim();
+            const val = parseFloat(rawInput);
+
+            if (isNaN(val)) {
+                alert("Por favor ingresa un número decimal válido (ejemplo: 0.75 o 2.4).");
+                return;
+            }
+
+            const procCard = document.getElementById('procedure-card');
+            const procContent = document.getElementById('proc-content');
+            document.getElementById('proc-title').innerHTML = `📌 Procedimiento: Decimal a Fracción (${rawInput})`;
+
+            const parts = rawInput.split('.');
+            let decimalPlaces = 0;
+            if (parts.length > 1) {
+                decimalPlaces = parts[1].length;
+            }
+
+            const scale = Math.pow(10, decimalPlaces);
+            const numUnreduced = Math.round(val * scale);
+            const denUnreduced = scale;
+
+            const numFactors = getPrimeFactors(numUnreduced);
+            const denFactors = getPrimeFactors(denUnreduced);
+
+            const cancellation = cancelPrimeFactors(numFactors.factors, denFactors.factors);
+
+            const mcd = cancellation.commonFactors.reduce((acc, curr) => acc * curr, 1);
+            const numReduced = numUnreduced / mcd;
+            const denReduced = denUnreduced / mcd;
+
+            let html = `
+                <div class="step-block">
+                    <div class="step-heading">
+                        <div class="step-number">1</div>
+                        <span>Conversión Inicial a Fracción Decimal</span>
+                    </div>
+                    <p>Como el decimal <strong>${rawInput}</strong> tiene <strong>${decimalPlaces}</strong> cifra(s) decimal(es), multiplicamos y dividimos entre 10<sup>${decimalPlaces}</sup> = <strong>${scale}</strong>:</p>
+                    <div class="cancel-expression">
+                        <span>${rawInput}</span> = 
+                        <div class="frac-visual">
+                            <span class="frac-num">${numUnreduced}</span>
+                            <span class="frac-den">${denUnreduced}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <div class="step-heading">
+                        <div class="step-number">2</div>
+                        <span>Las Dos Factorizaciones (Descomposición en Factores Primos)</span>
+                    </div>
+                    <p>Descomponemos por separado tanto el <strong>numerador (${numUnreduced})</strong> como el <strong>denominador (${denUnreduced})</strong> dividiendo consecutivamente entre números primos (2, 3, 5, 7, ...):</p>
+                    
+                    <div class="factorization-flex">
+                        <div class="factor-table-card">
+                            <div class="factor-table-title">Factorización del Numerador (${numUnreduced})</div>
+                            ${renderFactorTable(numFactors.steps)}
+                            <p style="margin-top: 10px; font-size: 0.9rem; font-family: 'Fira Code', monospace;">
+                                ${numUnreduced} = ${numFactors.factors.join(' × ')}
+                            </p>
+                        </div>
+
+                        <div class="factor-table-card">
+                            <div class="factor-table-title">Factorización del Denominador (${denUnreduced})</div>
+                            ${renderFactorTable(denFactors.steps)}
+                            <p style="margin-top: 10px; font-size: 0.9rem; font-family: 'Fira Code', monospace;">
+                                ${denUnreduced} = ${denFactors.factors.join(' × ')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-block">
+                    <div class="step-heading">
+                        <div class="step-number">3</div>
+                        <span>Simplificación Cancelando Factores Primos Comunes</span>
+                    </div>
+                    <p>Expresamos la fracción con sus factores primos y cancelamos los factores repetidos arriba y abajo:</p>
+                    
+                    <div class="cancel-expression">
+                        <div class="frac-visual">
+                            <span class="frac-num">${cancellation.numFormatted}</span>
+                            <span class="frac-den">${cancellation.denFormatted}</span>
+                        </div>
+                        <span>=</span>
+                        <div class="frac-visual">
+                            <span class="frac-num">${numReduced}</span>
+                            <span class="frac-den">${denReduced}</span>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 0.95rem; color: var(--text-muted);">
+                        Factores primos comunes cancelados: <strong>${cancellation.commonFactors.length > 0 ? cancellation.commonFactors.join(', ') : 'Ninguno'}</strong>
+                        (Máximo Común Divisor MCD = <strong>${mcd}</strong>).
+                    </p>
+                </div>
+
+                <div class="result-box">
+                    Resultado Final: ${rawInput} = 
+                    <div class="frac-visual" style="vertical-align: middle; font-size: 1.3rem;">
+                        <span class="frac-num">${numReduced}</span>
+                        <span class="frac-den">${denReduced}</span>
+                    </div>
+                    ${numReduced > denReduced ? `<span style="font-size: 1rem; color: var(--text); font-weight: normal; margin-left: 15px;">= ${Math.floor(numReduced/denReduced)} <div class="frac-visual" style="font-size: 0.9rem;"><span class="frac-num">${numReduced % denReduced}</span><span class="frac-den">${denReduced}</span></div> (Número Mixto)</span>` : ''}
+                </div>
+            `;
+
+            procContent.innerHTML = html;
+            procCard.style.display = 'block';
+        }
+
+        function getPrimeFactors(n) {
+            let temp = n;
+            let factors = [];
+            let steps = [];
+            let d = 2;
+
+            while (temp > 1) {
+                while (temp % d === 0) {
+                    factors.push(d);
+                    steps.push({ current: temp, prime: d });
+                    temp = temp / d;
+                }
+                d++;
+                if (d * d > temp) {
+                    if (temp > 1) {
+                        factors.push(temp);
+                        steps.push({ current: temp, prime: temp });
+                        temp = 1;
+                    }
+                    break;
+                }
+            }
+            steps.push({ current: 1, prime: '' });
+
+            return { factors, steps };
+        }
+
+        function renderFactorTable(steps) {
+            let rows = steps.map(s => `
+                <tr>
+                    <td class="number-col">${s.current}</td>
+                    <td class="prime-col">${s.prime}</td>
+                </tr>
+            `).join('');
+
+            return `<table class="factor-table">${rows}</table>`;
+        }
+
+        function cancelPrimeFactors(numFactors, denFactors) {
+            let denCopy = [...denFactors];
+            let numCanceled = [];
+            let denCanceled = [];
+            let commonFactors = [];
+
+            numFactors.forEach(f => {
+                let idx = denCopy.indexOf(f);
+                if (idx !== -1) {
+                    numCanceled.push({ val: f, isCanceled: true });
+                    commonFactors.push(f);
+                    denCopy.splice(idx, 1);
+                } else {
+                    numCanceled.push({ val: f, isCanceled: false });
+                }
+            });
+
+            let numCommonCopy = [...commonFactors];
+            denFactors.forEach(f => {
+                let idx = numCommonCopy.indexOf(f);
+                if (idx !== -1) {
+                    denCanceled.push({ val: f, isCanceled: true });
+                    numCommonCopy.splice(idx, 1);
+                } else {
+                    denCanceled.push({ val: f, isCanceled: false });
+                }
+            });
+
+            let numFormatted = numCanceled.map(item =>
+                item.isCanceled ? `<span class="cancel-prime">${item.val}</span>` : `<span class="keep-prime">${item.val}</span>`
+            ).join(' × ');
+
+            let denFormatted = denCanceled.map(item =>
+                item.isCanceled ? `<span class="cancel-prime">${item.val}</span>` : `<span class="keep-prime">${item.val}</span>`
+            ).join(' × ');
+
+            return {
+                numFormatted,
+                denFormatted,
+                commonFactors
+            };
+        }
+
+        // Initialize default view
+        calculateFracToDec();
+    </script>
+</body>
+</html>
