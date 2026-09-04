@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Optimizador de Tareas & Fotos de Cuaderno a PDF</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 antialiased min-h-screen p-4 md:p-8">
+  <div class="max-w-6xl mx-auto space-y-6">
+    
+    <!-- Encabezado Principal -->
+    <header class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl backdrop-blur">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30 text-2xl">📚</span>
+            <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-300 via-sky-300 to-emerald-300 bg-clip-text text-transparent">
+              Compresor de Fotos de Cuaderno & Convertidor a PDF
+            </h1>
+          </div>
+          <p class="text-slate-400 text-sm mt-2">
+            Convierte fotos pesadas de tu cuaderno (10MB+) en un PDF ligero (~300KB por hoja) super claro, nítido y listo para enviar.
+            <span class="text-emerald-400 font-medium">🔒 100% Privado y Offline: tus fotos no salen de tu computadora.</span>
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Zona de Dropzone / Carga de Archivos -->
+    <div id="dropzone" class="border-2 border-dashed border-indigo-500/40 hover:border-indigo-400 bg-slate-800/40 hover:bg-indigo-950/20 rounded-2xl p-8 text-center cursor-pointer transition-all duration-200 group">
+      <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+      <div class="space-y-4 pointer-events-none">
+        <div class="w-16 h-16 mx-auto rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+          📷
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-slate-200">Arrastra aquí tus fotos de cuaderno o haz clic para seleccionar</p>
+          <p class="text-slate-400 text-sm mt-1">Puedes seleccionar múltiples fotos a la vez (.jpg, .png, .jpeg, .webp)</p>
+        </div>
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-700/50 rounded-full text-xs text-slate-300 border border-slate-600/50">
+          <span>⚡ Optimización inteligente de contraste y eliminación de sombras</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Controles Globales y Opciones de Filtro -->
+    <div id="controlsSection" class="hidden bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 shadow-xl space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-700/60 pb-4">
+        <h2 class="text-lg font-semibold text-slate-200 flex items-center gap-2">
+          <span>⚙️</span> Configuración de Optimización Inteligente
+        </h2>
+        <button id="clearAllBtn" class="px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs rounded-lg border border-rose-500/30 transition-colors">
+          Limpiar Todo
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Preset de Filtros -->
+        <div class="space-y-2">
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Modo de Mejoramiento</label>
+          <select id="presetSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+            <option value="scanner" selected>🟢 Escáner Cuaderno (Limpia fondo + Resalta texto)</option>
+            <option value="bw">⚪ Escáner Blanco y Negro (Binarizado nítido)</option>
+            <option value="grayscale">🔘 Escala de Grises Optimizada</option>
+            <option value="original">🖼️ Color Original (Solo Comprimir Peso)</option>
+          </select>
+          <p class="text-xs text-slate-400">Escáner Cuaderno remueve la iluminación amarillenta y sombras del papel.</p>
+        </div>
+
+        <!-- Dimensión Máxima -->
+        <div class="space-y-2">
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Resolución Máxima</label>
+          <select id="maxDimSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+            <option value="1600" selected>1600px (Recomendado - Excelente legibilidad / Muy Ligero)</option>
+            <option value="1200">1200px (Ultra Ligero - Ideal para conexiones lentas)</option>
+            <option value="2000">2000px (Alta Resolución - Máxima nitidez)</option>
+            <option value="0">Original (Sin cambiar dimensiones)</option>
+          </select>
+          <p class="text-xs text-slate-400">Reduce fotos de 4000px+ a una dimensión perfecta para leer sin perder texto.</p>
+        </div>
+
+        <!-- Calidad JPEG -->
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Calidad de Compresión</label>
+            <span id="qualityVal" class="text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/30">70%</span>
+          </div>
+          <input type="range" id="qualityRange" min="30" max="95" value="70" class="w-full accent-indigo-500 bg-slate-700 rounded-lg cursor-pointer">
+          <p class="text-xs text-slate-400">70% es la calidad óptima para texto de cuaderno sin artefactos visibles.</p>
+        </div>
+      </div>
+
+      <!-- Sliders Avanzados de Ajuste Fino -->
+      <div class="pt-4 border-t border-slate-700/60 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div class="flex justify-between items-center text-xs mb-1.5">
+            <span class="font-medium text-slate-300">Contraste Extra</span>
+            <span id="contrastVal" class="text-indigo-400 font-semibold">0%</span>
+          </div>
+          <input type="range" id="contrastRange" min="-50" max="100" value="0" class="w-full accent-indigo-500 bg-slate-700 rounded-lg cursor-pointer">
+        </div>
+        <div>
+          <div class="flex justify-between items-center text-xs mb-1.5">
+            <span class="font-medium text-slate-300">Brillo / Fondo Blanco</span>
+            <span id="brightnessVal" class="text-indigo-400 font-semibold">0%</span>
+          </div>
+          <input type="range" id="brightnessRange" min="-50" max="50" value="0" class="w-full accent-indigo-500 bg-slate-700 rounded-lg cursor-pointer">
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de Métricas y Estadísticas -->
+    <div id="statsSection" class="hidden bg-gradient-to-r from-indigo-950/60 via-slate-800 to-emerald-950/60 border border-slate-700/80 rounded-2xl p-5 shadow-lg">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-6">
+          <div>
+            <p class="text-xs text-slate-400 uppercase font-semibold">Páginas</p>
+            <p id="totalPages" class="text-xl font-bold text-slate-100">0</p>
+          </div>
+          <div class="h-8 w-px bg-slate-700"></div>
+          <div>
+            <p class="text-xs text-slate-400 uppercase font-semibold">Peso Original</p>
+            <p id="totalOriginalSize" class="text-xl font-bold text-rose-400">0 MB</p>
+          </div>
+          <div class="h-8 w-px bg-slate-700"></div>
+          <div>
+            <p class="text-xs text-slate-400 uppercase font-semibold">Peso Optimizado</p>
+            <p id="totalOptimizedSize" class="text-xl font-bold text-emerald-400">0 MB</p>
+          </div>
+          <div class="h-8 w-px bg-slate-700"></div>
+          <div>
+            <p class="text-xs text-slate-400 uppercase font-semibold">Ahorro de Espacio</p>
+            <p id="savingsPercent" class="text-xl font-bold text-indigo-300">0%</p>
+          </div>
+        </div>
+
+        <button id="downloadPdfBtn" class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-emerald-500 hover:from-indigo-600 hover:to-emerald-600 text-white font-bold text-sm rounded-xl shadow-lg hover:shadow-indigo-500/20 transition-all flex items-center gap-2.5">
+          <span>📄</span> Descargar PDF Completo
+        </button>
+      </div>
+    </div>
+
+    <!-- Galería y Reordenamiento de Páginas -->
+    <div id="pagesContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+
+  </div>
+
+  <script>
+    // Estado Global de Páginas
+    let pagesData = []; // Array de { id, file, origSize, optJpegBytes, width, height, rotation, dataUrl }
+
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const controlsSection = document.getElementById('controlsSection');
+    const statsSection = document.getElementById('statsSection');
+    const pagesContainer = document.getElementById('pagesContainer');
+
+    const presetSelect = document.getElementById('presetSelect');
+    const maxDimSelect = document.getElementById('maxDimSelect');
+    const qualityRange = document.getElementById('qualityRange');
+    const qualityVal = document.getElementById('qualityVal');
+    const contrastRange = document.getElementById('contrastRange');
+    const contrastVal = document.getElementById('contrastVal');
+    const brightnessRange = document.getElementById('brightnessRange');
+    const brightnessVal = document.getElementById('brightnessVal');
+
+    const totalPagesEl = document.getElementById('totalPages');
+    const totalOriginalSizeEl = document.getElementById('totalOriginalSize');
+    const totalOptimizedSizeEl = document.getElementById('totalOptimizedSize');
+    const savingsPercentEl = document.getElementById('savingsPercent');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+
+    // Eventos de Selección y Drop
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-indigo-400', 'bg-indigo-950/30');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-indigo-400', 'bg-indigo-950/30');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-indigo-400', 'bg-indigo-950/30');
+      if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+    });
+
+    // Control Presets
+    presetSelect.addEventListener('change', () => {
+      // Mantiene el contraste y brillo por defecto en 0% según la preferencia
+      contrastRange.value = 0;
+      brightnessRange.value = 0;
+      updateControlLabels();
+      reprocessAllPages();
+    });
+
+    [maxDimSelect, qualityRange, contrastRange, brightnessRange].forEach(ctrl => {
+      ctrl.addEventListener('input', () => {
+        updateControlLabels();
+        reprocessAllPages();
+      });
+    });
+
+    function updateControlLabels() {
+      qualityVal.textContent = `${qualityRange.value}%`;
+      contrastVal.textContent = `${contrastRange.value >= 0 ? '+' : ''}${contrastRange.value}%`;
+      brightnessVal.textContent = `${brightnessRange.value >= 0 ? '+' : ''}${brightnessRange.value}%`;
+    }
+
+    clearAllBtn.addEventListener('click', () => {
+      pagesData = [];
+      renderPages();
+      updateStats();
+    });
+
+    // Procesar archivos cargados
+    async function handleFiles(files) {
+      const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
+      if (!imageFiles.length) return;
+
+      controlsSection.classList.remove('hidden');
+      statsSection.classList.remove('hidden');
+
+      for (const file of imageFiles) {
+        const pageId = 'page_' + Math.random().toString(36).substring(2, 9);
+        const imgObj = await loadImage(file);
+        
+        pagesData.push({
+          id: pageId,
+          file: file,
+          origSize: file.size,
+          img: imgObj,
+          rotation: 0,
+          optJpegBytes: null,
+          width: imgObj.width,
+          height: imgObj.height,
+          dataUrl: ''
+        });
+      }
+
+      await reprocessAllPages();
+    }
+
+    function loadImage(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Reprocesar todas las páginas con Canvas API
+    async function reprocessAllPages() {
+      const maxDim = parseInt(maxDimSelect.value, 10);
+      const quality = parseInt(qualityRange.value, 10) / 100;
+      const contrast = parseInt(contrastRange.value, 10);
+      const brightness = parseInt(brightnessRange.value, 10);
+      const mode = presetSelect.value;
+
+      for (let page of pagesData) {
+        const processed = processImageCanvas(page.img, page.rotation, maxDim, mode, contrast, brightness, quality);
+        page.optJpegBytes = processed.jpegBytes;
+        page.width = processed.width;
+        page.height = processed.height;
+        page.dataUrl = processed.dataUrl;
+      }
+
+      renderPages();
+      updateStats();
+    }
+
+    // Algoritmo de Procesamiento en Canvas
+    function processImageCanvas(img, rotation, maxDim, mode, contrastVal, brightnessVal, quality) {
+      let origW = img.width;
+      let origH = img.height;
+
+      // Swap dimensions if 90 or 270 deg rotation
+      const isRotated = (rotation % 180 !== 0);
+      let srcW = isRotated ? origH : origW;
+      let srcH = isRotated ? origW : origH;
+
+      // Scale to max dimension
+      let targetW = srcW;
+      let targetH = srcH;
+      if (maxDim > 0 && (srcW > maxDim || srcH > maxDim)) {
+        if (srcW >= srcH) {
+          targetW = maxDim;
+          targetH = Math.round((srcH * maxDim) / srcW);
+        } else {
+          targetH = maxDim;
+          targetW = Math.round((srcW * maxDim) / srcH);
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext('2d');
+
+      // Aplicar Rotación
+      ctx.save();
+      ctx.translate(targetW / 2, targetH / 2);
+      ctx.rotate((rotation * Math.PI) / 180);
+      if (isRotated) {
+        ctx.drawImage(img, -targetH / 2, -targetW / 2, targetH, targetW);
+      } else {
+        ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
+      }
+      ctx.restore();
+
+      // Procesar Pixeles para mejora de cuaderno (Brillo/Contraste/Monocromo)
+      if (mode !== 'original' || contrastVal !== 0 || brightnessVal !== 0) {
+        const imgData = ctx.getImageData(0, 0, targetW, targetH);
+        const data = imgData.data;
+
+        const factor = (259 * (contrastVal + 255)) / (255 * (259 - contrastVal));
+        const brightAdd = (brightnessVal * 255) / 100;
+
+        for (let i = 0; i < data.length; i += 4) {
+          let r = data[i];
+          let g = data[i + 1];
+          let b = data[i + 2];
+
+          if (mode === 'grayscale' || mode === 'scanner' || mode === 'bw') {
+            // Escala de grises por luminancia relativa
+            let gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+            if (mode === 'bw') {
+              // Binarizado con umbral adaptable simple
+              gray = (gray + brightAdd > 140) ? 255 : 0;
+              r = g = b = gray;
+            } else if (mode === 'scanner') {
+              // Ajustar contraste y blanquear fondos grisáceos
+              gray = factor * (gray - 128) + 128 + brightAdd;
+              // Papel blanqueado arriba de 210
+              if (gray > 210) gray = 255;
+              if (gray < 0) gray = 0;
+              r = g = b = gray;
+            } else {
+              // Grayscale normal
+              gray = factor * (gray - 128) + 128 + brightAdd;
+              r = g = b = Math.min(255, Math.max(0, gray));
+            }
+          } else {
+            // Color original con ajuste de brillo/contraste
+            r = factor * (r - 128) + 128 + brightAdd;
+            g = factor * (g - 128) + 128 + brightAdd;
+            b = factor * (b - 128) + 128 + brightAdd;
+
+            r = Math.min(255, Math.max(0, r));
+            g = Math.min(255, Math.max(0, g));
+            b = Math.min(255, Math.max(0, b));
+          }
+
+          data[i] = r;
+          data[i + 1] = g;
+          data[i + 2] = b;
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+      }
+
+      // Convertir a DataURL / Jpeg Uint8Array
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+      const base64Data = dataUrl.split(',')[1];
+      const binaryStr = atob(base64Data);
+      const jpegBytes = new Uint8Array(binaryStr.length);
+      for (let i = 0; i < binaryStr.length; i++) {
+        jpegBytes[i] = binaryStr.charCodeAt(i);
+      }
+
+      return {
+        jpegBytes,
+        width: targetW,
+        height: targetH,
+        dataUrl
+      };
+    }
+
+    // Renderizar Galería de Páginas
+    function renderPages() {
+      pagesContainer.innerHTML = '';
+
+      if (!pagesData.length) {
+        controlsSection.classList.add('hidden');
+        statsSection.classList.add('hidden');
+        return;
+      }
+
+      pagesData.forEach((page, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 shadow-lg flex flex-col justify-between space-y-4 group';
+
+        const origMb = (page.origSize / (1024 * 1024)).toFixed(2);
+        const optMb = page.optJpegBytes ? (page.optJpegBytes.length / (1024 * 1024)).toFixed(2) : 0;
+        const optKb = page.optJpegBytes ? Math.round(page.optJpegBytes.length / 1024) : 0;
+        const savings = Math.round((1 - page.optJpegBytes.length / page.origSize) * 100);
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b border-slate-700/60 pb-2.5">
+            <span class="font-bold text-sm text-slate-200 flex items-center gap-1.5">
+              <span class="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs flex items-center justify-center border border-indigo-500/30">${idx + 1}</span>
+              Página ${idx + 1}
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${savings > 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-slate-700 text-slate-300'}">
+              ${savings > 0 ? `-${savings}%` : '0%'}
+            </span>
+          </div>
+
+          <!-- Vista previa de imagen -->
+          <div class="relative bg-slate-950 rounded-xl overflow-hidden aspect-[3/4] flex items-center justify-center border border-slate-800">
+            <img src="${page.dataUrl}" class="max-h-full max-w-full object-contain shadow-md" alt="Página ${idx + 1}">
+          </div>
+
+          <!-- Detalles de resolución y peso -->
+          <div class="text-xs space-y-1 bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+            <div class="flex justify-between text-slate-400">
+              <span>Resolución:</span>
+              <span class="font-mono text-slate-200">${page.width} x ${page.height} px</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>Peso original:</span>
+              <span class="font-mono text-rose-400">${origMb} MB</span>
+            </div>
+            <div class="flex justify-between text-slate-400">
+              <span>Peso optimizado:</span>
+              <span class="font-mono font-bold text-emerald-400">${optKb} KB (${optMb} MB)</span>
+            </div>
+          </div>
+
+          <!-- Botones de Acción / Girar / Reordenar -->
+          <div class="grid grid-cols-4 gap-1.5 pt-1">
+            <button onclick="rotatePage(${idx}, -90)" title="Girar 90° Izquierda" class="p-2 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg text-xs flex items-center justify-center transition-colors">
+              ↪️
+            </button>
+            <button onclick="rotatePage(${idx}, 90)" title="Girar 90° Derecha" class="p-2 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg text-xs flex items-center justify-center transition-colors">
+              ↩️
+            </button>
+            <button onclick="movePage(${idx}, -1)" ${idx === 0 ? 'disabled class="opacity-30 p-2 bg-slate-800 rounded-lg text-xs cursor-not-allowed"' : 'class="p-2 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg text-xs flex items-center justify-center transition-colors"'} title="Mover Arriba">
+              ⬆️
+            </button>
+            <button onclick="movePage(${idx}, 1)" ${idx === pagesData.length - 1 ? 'disabled class="opacity-30 p-2 bg-slate-800 rounded-lg text-xs cursor-not-allowed"' : 'class="p-2 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg text-xs flex items-center justify-center transition-colors"'} title="Mover Abajo">
+              ⬇️
+            </button>
+          </div>
+
+          <button onclick="removePage(${idx})" class="w-full py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold rounded-lg border border-rose-500/20 transition-colors flex items-center justify-center gap-1">
+            🗑️ Eliminar Hoja
+          </button>
+        `;
+
+        pagesContainer.appendChild(card);
+      });
+    }
+
+    // Funciones de Edición de Páginas
+    window.rotatePage = async function(idx, deg) {
+      pagesData[idx].rotation = (pagesData[idx].rotation + deg + 360) % 360;
+      await reprocessAllPages();
+    };
+
+    window.movePage = async function(idx, dir) {
+      const newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= pagesData.length) return;
+      const temp = pagesData[idx];
+      pagesData[idx] = pagesData[newIdx];
+      pagesData[newIdx] = temp;
+      renderPages();
+    };
+
+    window.removePage = async function(idx) {
+      pagesData.splice(idx, 1);
+      renderPages();
+      updateStats();
+    };
+
+    // Actualizar Barra de Estadísticas
+    function updateStats() {
+      const totalCount = pagesData.length;
+      totalPagesEl.textContent = totalCount;
+
+      let origTotalBytes = 0;
+      let optTotalBytes = 0;
+
+      pagesData.forEach(p => {
+        origTotalBytes += p.origSize;
+        if (p.optJpegBytes) optTotalBytes += p.optJpegBytes.length;
+      });
+
+      const origMb = (origTotalBytes / (1024 * 1024)).toFixed(2);
+      const optMb = (optTotalBytes / (1024 * 1024)).toFixed(2);
+      const savings = origTotalBytes ? Math.round((1 - optTotalBytes / origTotalBytes) * 100) : 0;
+
+      totalOriginalSizeEl.textContent = `${origMb} MB`;
+      totalOptimizedSizeEl.textContent = `${optMb} MB`;
+      savingsPercentEl.textContent = `📉 -${savings}%`;
+    }
+
+    // GENERADOR DIRECTO DE PDF EN JAVASCRIPT PURO
+    downloadPdfBtn.addEventListener('click', () => {
+      if (!pagesData.length) return;
+
+      try {
+        downloadPdfBtn.innerText = '⏳ Generando PDF...';
+        downloadPdfBtn.disabled = true;
+
+        setTimeout(() => {
+          const pdfBlob = createPdfBlobFromPages(pagesData);
+          const url = URL.createObjectURL(pdfBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Tarea_Cuaderno_Optimizado_${new Date().toISOString().slice(0, 10)}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          downloadPdfBtn.innerHTML = '<span>📄</span> Descargar PDF Completo';
+          downloadPdfBtn.disabled = false;
+        }, 100);
+      } catch (err) {
+        alert('Error al generar PDF: ' + err.message);
+        downloadPdfBtn.innerHTML = '<span>📄</span> Descargar PDF Completo';
+        downloadPdfBtn.disabled = false;
+      }
+    });
+
+    function createPdfBlobFromPages(pages) {
+      const encoder = new TextEncoder();
+      const objects = [];
+      const pdfParts = [];
+      const xrefOffsets = [0];
+
+      let header = "%PDF-1.4\n%\xFF\xFF\xFF\xFF\n";
+      pdfParts.push(encoder.encode(header));
+      let currentOffset = header.length;
+
+      function addObjBytes(bytes) {
+        const objId = objects.length + 1;
+        objects.push(objId);
+        xrefOffsets.push(currentOffset);
+
+        const prefix = encoder.encode(`${objId} 0 obj\n`);
+        const suffix = encoder.encode("\nendobj\n");
+
+        const full = new Uint8Array(prefix.length + bytes.length + suffix.length);
+        full.set(prefix, 0);
+        full.set(bytes, prefix.length);
+        full.set(suffix, prefix.length + bytes.length);
+
+        pdfParts.push(full);
+        currentOffset += full.length;
+        return objId;
+      }
+
+      function addObjString(str) {
+        return addObjBytes(encoder.encode(str));
+      }
+
+      const pageObjIds = [];
+      const imageObjIds = [];
+      const contentObjIds = [];
+
+      let nextObjId = 3;
+      for (let i = 0; i < pages.length; i++) {
+        imageObjIds.push(nextObjId++);
+        contentObjIds.push(nextObjId++);
+        pageObjIds.push(nextObjId++);
+      }
+
+      // Catalog (Obj 1)
+      addObjString(`<< /Type /Catalog /Pages 2 0 R >>`);
+
+      // Pages (Obj 2)
+      const kidsStr = pageObjIds.map(id => `${id} 0 R`).join(' ');
+      addObjString(`<< /Type /Pages /Kids [${kidsStr}] /Count ${pages.length} >>`);
+
+      // Objetos por cada página
+      for (let i = 0; i < pages.length; i++) {
+        const p = pages[i];
+        const imgObjId = imageObjIds[i];
+        const contentObjId = contentObjIds[i];
+
+        // 1. Image Object DCTDecode
+        const imgDictHeader = encoder.encode(`<< /Type /XObject /Subtype /Image /Width ${p.width} /Height ${p.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.optJpegBytes.length} >>\nstream\n`);
+        const imgDictFooter = encoder.encode(`\nendstream`);
+        const imgBytes = new Uint8Array(imgDictHeader.length + p.optJpegBytes.length + imgDictFooter.length);
+        imgBytes.set(imgDictHeader, 0);
+        imgBytes.set(p.optJpegBytes, imgDictHeader.length);
+        imgBytes.set(imgDictFooter, imgDictHeader.length + p.optJpegBytes.length);
+
+        addObjBytes(imgBytes);
+
+        // Escalado a dimensiones en puntos (DPI 150)
+        const ptW = (p.width * 72) / 150;
+        const ptH = (p.height * 72) / 150;
+
+        // 2. Stream de Contenido
+        const streamText = `q ${ptW.toFixed(2)} 0 0 ${ptH.toFixed(2)} 0 0 cm /Img${i} Do Q`;
+        const streamBytes = encoder.encode(streamText);
+        const contentObjStr = `<< /Length ${streamBytes.length} >>\nstream\n${streamText}\nendstream`;
+        addObjString(contentObjStr);
+
+        // 3. Objeto Page
+        const pageObjStr = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${ptW.toFixed(2)} ${ptH.toFixed(2)}] /Contents ${contentObjId} 0 R /Resources << /XObject << /Img${i} ${imgObjId} 0 R >> >> >>`;
+        addObjString(pageObjStr);
+      }
+
+      // XRef Table
+      const startXref = currentOffset;
+      let xrefStr = `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+      for (let i = 1; i <= objects.length; i++) {
+        const offset = xrefOffsets[i];
+        xrefStr += `${String(offset).padStart(10, '0')} 00000 n \n`;
+      }
+
+      xrefStr += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${startXref}\n%%EOF`;
+      pdfParts.push(encoder.encode(xrefStr));
+
+      let totalLen = pdfParts.reduce((acc, part) => acc + part.length, 0);
+      let finalPdf = new Uint8Array(totalLen);
+      let pos = 0;
+      for (const part of pdfParts) {
+        finalPdf.set(part, pos);
+        pos += part.length;
+      }
+
+      return new Blob([finalPdf], { type: 'application/pdf' });
+    }
+  </script>
+</body>
+</html>
