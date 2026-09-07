@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador QR Pro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librería QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* Animación suave para el QR */
+        #qrcode img, #qrcode canvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Contenedor Principal -->
+    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Panel de Configuración (Izquierda) -->
+        <div class="glass-panel rounded-2xl p-8 shadow-2xl animate-fade-in-up">
+            <div class="flex items-center gap-3 mb-6">
+                <i class="fa-solid fa-qrcode text-3xl text-indigo-500"></i>
+                <h1 class="text-2xl font-bold text-white">QR Creator <span class="text-indigo-500">ARM</span></h1>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Entrada de Texto/URL -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-400 mb-2">Contenido (URL o Texto)</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-link text-slate-500"></i>
+                        </div>
+                        <input type="text" id="qrText" placeholder="https://mi-sitio.com" 
+                            class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-white placeholder-slate-500 transition-all outline-none"
+                            value="https://www.google.com">
+                    </div>
+                </div>
+
+                <!-- Opciones de Color -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-400 mb-2">Color del Código</label>
+                        <div class="flex items-center gap-3 bg-slate-800 p-2 rounded-lg border border-slate-700">
+                            <input type="color" id="colorDark" value="#000000" class="w-8 h-8 rounded cursor-pointer bg-transparent border-none">
+                            <span class="text-xs text-slate-400 font-mono" id="colorDarkVal">#000000</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-400 mb-2">Color de Fondo</label>
+                        <div class="flex items-center gap-3 bg-slate-800 p-2 rounded-lg border border-slate-700">
+                            <input type="color" id="colorLight" value="#ffffff" class="w-8 h-8 rounded cursor-pointer bg-transparent border-none">
+                            <span class="text-xs text-slate-400 font-mono" id="colorLightVal">#FFFFFF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slider de Tamaño -->
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-medium text-slate-400">Tamaño de imagen</label>
+                        <span class="text-sm text-indigo-400 font-bold" id="sizeLabel">300px</span>
+                    </div>
+                    <input type="range" id="qrSize" min="100" max="600" value="300" step="10"
+                        class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                </div>
+
+                <!-- Botón de Generar (aunque es automático, sirve de feedback) -->
+                <button id="downloadBtn" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-download"></i>
+                    Descargar PNG
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel de Previsualización (Derecha) -->
+        <div class="glass-panel rounded-2xl p-8 flex flex-col items-center justify-center relative overflow-hidden">
+            <!-- Decoración de fondo -->
+            <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+            <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+
+            <h2 class="text-lg font-semibold text-slate-300 mb-6 z-10">Vista Previa</h2>
+            
+            <!-- El contenedor del QR -->
+            <div class="bg-white/5 p-4 rounded-xl border border-white/10 shadow-2xl z-10 transition-all duration-300" id="qrContainer">
+                <div id="qrcode"></div>
+            </div>
+
+            <p class="mt-6 text-sm text-slate-500 text-center max-w-xs">
+                Escanea con tu cámara para probar. Click en "Descargar" para guardar.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Referencias al DOM
+        const qrText = document.getElementById('qrText');
+        const colorDark = document.getElementById('colorDark');
+        const colorLight = document.getElementById('colorLight');
+        const colorDarkVal = document.getElementById('colorDarkVal');
+        const colorLightVal = document.getElementById('colorLightVal');
+        const qrSize = document.getElementById('qrSize');
+        const sizeLabel = document.getElementById('sizeLabel');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const qrContainerWrapper = document.getElementById('qrContainer');
+
+        let qrcodeObj = null;
+
+        // Función Principal de Generación
+        function generateQR() {
+            // Limpiar anterior
+            qrcodeContainer.innerHTML = "";
+
+            const text = qrText.value || " "; // Espacio vacío para no romper si borran todo
+            const size = parseInt(qrSize.value);
+            const dark = colorDark.value;
+            const light = colorLight.value;
+
+            // Actualizar etiquetas de texto
+            colorDarkVal.textContent = dark.toUpperCase();
+            colorLightVal.textContent = light.toUpperCase();
+            sizeLabel.textContent = `${size}px`;
+
+            // Instancia de QRCode.js
+            try {
+                qrcodeObj = new QRCode(qrcodeContainer, {
+                    text: text,
+                    width: size,
+                    height: size,
+                    colorDark : dark,
+                    colorLight : light,
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+
+                // Pequeño hack para centrarlo visualmente si la librería agrega márgenes
+                setTimeout(() => {
+                   const img = qrcodeContainer.querySelector('img');
+                   if(img) {
+                       img.style.maxWidth = "100%";
+                       img.style.height = "auto";
+                       // Ajustar contenedor visualmente si el QR es muy pequeño
+                       if(size < 200) {
+                           qrContainerWrapper.style.padding = "2rem";
+                       } else {
+                           qrContainerWrapper.style.padding = "1rem";
+                       }
+                   }
+                }, 50);
+
+            } catch (e) {
+                console.error("Error generando QR", e);
+            }
+        }
+
+        // Función de Descarga
+        function downloadQR() {
+            const img = qrcodeContainer.querySelector('img');
+            
+            if (img && img.src) {
+                const link = document.createElement('a');
+                link.download = `qr-code-${Date.now()}.png`;
+                link.href = img.src;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                // Fallback por si la librería renderiza canvas en lugar de img
+                const canvas = qrcodeContainer.querySelector('canvas');
+                if(canvas) {
+                    const link = document.createElement('a');
+                    link.download = `qr-code-${Date.now()}.png`;
+                    link.href = canvas.toDataURL("image/png");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    alert("Espera a que se genere el código completamente.");
+                }
+            }
+        }
+
+        // Event Listeners (Debounce para no saturar al escribir rápido)
+        let timeout = null;
+        const debounceGenerate = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(generateQR, 100); // 100ms de retraso
+        };
+
+        qrText.addEventListener('input', debounceGenerate);
+        colorDark.addEventListener('input', debounceGenerate);
+        colorLight.addEventListener('input', debounceGenerate);
+        qrSize.addEventListener('input', debounceGenerate);
+        
+        downloadBtn.addEventListener('click', downloadQR);
+
+        // Generar al inicio
+        window.onload = generateQR;
+
+    </script>
+</body>
+</html>
