@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aseo TI1C - Septiembre 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --utt-green: #00563f;
+            --utt-green-dark: #003828;
+            --utt-green-light: #00875a;
+            --utt-accent: #00c97a;
+            --utt-gold: #d4af37;
+            --bg: #f0f4f2;
+            --card: #ffffff;
+            --text: #0f2b1f;
+            --muted: #6b7f74;
+            --border: #d4e5dc;
+            --today-bg: #fff8e1;
+            --today-border: #f59e0b;
+            --today-glow: rgba(245,158,11,0.25);
+            --empty-bg: #f7faf8;
+            --shadow: 0 2px 10px rgba(0,86,63,0.08);
+            --shadow-hover: 0 6px 20px rgba(0,86,63,0.16);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px 16px 48px;
+        }
+
+        /* HEADER */
+        .page-header {
+            background: linear-gradient(135deg, var(--utt-green-dark) 0%, var(--utt-green) 100%);
+            border-radius: 16px;
+            padding: 22px 28px;
+            margin-bottom: 28px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 6px 24px rgba(0,56,40,0.3);
+        }
+
+        .header-icon {
+            width: 56px; height: 56px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .header-text h1 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+        .header-text p {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin-top: 3px;
+        }
+
+        .header-badge {
+            margin-left: auto;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 10px;
+            padding: 8px 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .header-badge .badge-num {
+            font-size: 1.6rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .header-badge .badge-label {
+            font-size: 0.7rem;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        /* TODAY BANNER */
+        #today-banner {
+            background: linear-gradient(135deg, #fff3cd, #fffbea);
+            border: 2px solid var(--today-border);
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: none;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 4px 16px var(--today-glow);
+        }
+        .banner-icon {
+            width: 42px; height: 42px;
+            background: var(--today-border);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        #today-banner strong { color: #92400e; font-weight: 800; }
+        #today-banner p { color: #78350f; font-size: 0.88rem; line-height: 1.4; }
+
+        /* WEEKDAY LABELS */
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .day-header {
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--utt-green);
+            padding: 8px 0;
+            border-bottom: 2px solid var(--utt-green-light);
+            margin-bottom: 4px;
+        }
+
+        /* DAY CARD */
+        .day-card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            min-height: 140px;
+            position: relative;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .day-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .day-card.empty {
+            background: var(--empty-bg);
+            border-color: transparent;
+            box-shadow: none;
+        }
+        .day-card.empty:hover { transform: none; }
+
+        .day-card.today {
+            background: var(--today-bg);
+            border: 2.5px solid var(--today-border);
+            box-shadow: 0 0 0 4px var(--today-glow), var(--shadow-hover);
+        }
+
+        .day-num {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--utt-green-dark);
+            line-height: 1;
+            margin-bottom: 3px;
+        }
+
+        .day-card.today .day-num {
+            color: #92400e;
+        }
+
+        .today-chip {
+            display: inline-block;
+            background: var(--today-border);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .weekday-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, var(--utt-green-light), transparent);
+            border-radius: 1px;
+            margin: 8px 0;
+        }
+        .day-card.today .divider {
+            background: linear-gradient(90deg, var(--today-border), transparent);
+        }
+
+        .student-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .student-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .student-dot {
+            width: 6px; height: 6px;
+            background: var(--utt-green-light);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .day-card.today .student-dot {
+            background: var(--today-border);
+        }
+
+        .aseo-icon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1rem;
+            opacity: 0.15;
+        }
+        .day-card.today .aseo-icon { opacity: 0.3; }
+
+        /* FOOTER */
+        .cal-footer {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 0.78rem;
+            color: var(--muted);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 700px) {
+            .cal-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .day-card { min-height: 110px; padding: 10px; }
+            .day-num { font-size: 1.2rem; }
+            .page-header { flex-direction: column; text-align: center; }
+            .header-badge { margin: 0 auto; }
+        }
+        @media (max-width: 420px) {
+            .cal-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="header-icon">&#129529;</div>
+        <div class="header-text">
+            <h1>Calendario de Aseo</h1>
+            <p>Grupo TI1C &bull; Septiembre 2026 &bull; UTTN</p>
+        </div>
+        <div class="header-badge">
+            <div class="badge-num">21</div>
+            <div class="badge-label">turnos</div>
+        </div>
+    </div>
+
+    <!-- TODAY BANNER -->
+    <div id="today-banner">
+        <div class="banner-icon"><i class="fa-solid fa-broom"></i></div>
+        <div>
+            <strong>&#128197; Hoy toca aseo</strong>
+            <p id="banner-text">...</p>
+        </div>
+    </div>
+
+    <!-- CALENDAR GRID -->
+    <div class="cal-grid">
+        <div class="day-header">Lunes</div>
+        <div class="day-header">Martes</div>
+        <div class="day-header">Mi&eacute;rcoles</div>
+        <div class="day-header">Jueves</div>
+        <div class="day-header">Viernes</div>
+    </div>
+
+    <div class="cal-grid" id="calendar-body"></div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-dot" style="background:var(--utt-green-light);"></div>
+            D&iacute;a con aseo asignado
+        </div>
+        <div class="legend-item">
+            <div class="legend-dot" style="background:var(--today-border);"></div>
+            Hoy
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="cal-footer">
+        <div>Calendario de Aseo &bull; Grupo TI1C &bull; UTTN Sep-Dic 2026</div>
+        <div>Creado por <strong>JE-Productions</strong> &bull; Herramienta No Oficial</div>
+    </div>
+
+    <script>
+    // Schedule data from PDF
+    // Format: [day-of-month-sep2026, weekday-abbr, [student names]]
+    const ASEO = [
+        { day: 2,  wd: 'Mi', students: ['Gael Amaya', 'Regina Avalos', 'Derek Bernadi'] },
+        { day: 3,  wd: 'J',  students: ['Reyna Campos', 'Jehiel Castaneda', 'Alexis Velazquez'] },
+        { day: 4,  wd: 'V',  students: ['Luis Cruz', 'Nancy Florencia', 'Emmanuel Hernandez'] },
+        { day: 7,  wd: 'L',  students: ['Rosse Meza', 'Alan Morales', 'Ethan Volcan'] },
+        { day: 8,  wd: 'M',  students: ['Asael Hernandez', 'Aron Iniguez', 'Brayan Lopez'] },
+        { day: 9,  wd: 'Mi', students: ['Jair Garcia', 'Josue Peque', 'Maximiliano Santana'] },
+        { day: 10, wd: 'J',  students: ['Lidia Mtz', 'Angel Mateos', 'Isabela Olarte'] },
+        { day: 11, wd: 'V',  students: ['Abigail Ostos', 'Eduardo Perez', 'Ximena Reyes'] },
+        { day: 14, wd: 'L',  students: ['Alberto Gamez', 'Lesly Gonzalez', 'Alfredo Sosa'] },
+        { day: 15, wd: 'M',  students: ['Dylan Rosales', 'Kimberly Castillo', 'Frida Varela'] },
+        { day: 16, wd: 'Mi', students: ['Gael Amaya', 'Regina Avalos', 'Derek Bernadi'] },
+        { day: 17, wd: 'J',  students: ['Reyna Campos', 'Jehiel Castaneda', 'Alexis Velazquez'] },
+        { day: 18, wd: 'V',  students: ['Luis Cruz', 'Nancy Florencia', 'Emmanuel Hernandez'] },
+        { day: 21, wd: 'L',  students: ['Rosse Meza', 'Alan Morales', 'Ethan Volcan'] },
+        { day: 22, wd: 'M',  students: ['Asael Hernandez', 'Aron Iniguez', 'Brayan Lopez'] },
+        { day: 23, wd: 'Mi', students: ['Jair Garcia', 'Josue Peque', 'Maximiliano Santana'] },
+        { day: 24, wd: 'J',  students: ['Lidia Mtz', 'Angel Mateos', 'Isabela Olarte'] },
+        { day: 25, wd: 'V',  students: ['Abigail Ostos', 'Eduardo Perez', 'Ximena Reyes'] },
+        { day: 28, wd: 'L',  students: ['Alberto Gamez', 'Lesly Gonzalez', 'Alfredo Sosa'] },
+        { day: 29, wd: 'M',  students: ['Dylan Rosales', 'Kimberly Castillo', 'Frida Varela'] },
+        { day: 30, wd: 'Mi', students: ['Gael Amaya', 'Regina Avalos', 'Derek Bernadi'] },
+    ];
+
+    const WD_NAMES = { L:'Lunes', M:'Martes', Mi:'Miercoles', J:'Jueves', V:'Viernes' };
+
+    // Sep 1 2026 is a Tuesday (M) -> grid offset: Tue = col index 1 (0-based)
+    // Mon=0, Tue=1, Wed=2, Thu=3, Fri=4
+    // Sep 1 = Tuesday, offset = 1 empty slots before day 1
+    // Build a map of assigned days
+    const aseoMap = {};
+    ASEO.forEach(a => { aseoMap[a.day] = a; });
+
+    const today = new Date();
+    const todayDay = (today.getMonth() === 8 && today.getFullYear() === 2026) ? today.getDate() : null;
+
+    // Days in Sep: 1-30; Sep 1 is Tuesday (col index 1 in Mon-Fri grid)
+    // So: day 1 -> Tuesday slot; day 2 -> Wednesday; ...
+    // Grid cells: each row has Mon..Fri
+    // Sep 1 = Tuesday => offset 1 (Monday before is empty)
+    // Sep 2 = Wednesday, Sep 3 = Thu, Sep 4 = Fri
+    // Sep 5-6 = weekend (skip), Sep 7 = Mon, etc.
+
+    // Build grid cells: only weekdays in Sep 2026
+    // Sep 1 is Tue. Let's enumerate all weekdays in Sep 2026:
+    const cells = []; // {day, col, hasData, students, wd}
+
+    // Sep 2026 weekday mapping
+    const sep2026 = [];
+    const weekdayLabels = ['L','M','Mi','J','V']; // Mon=0..Fri=4
+    // Sep 1 2026 = Tuesday = index 1
+    const sep1dow = 1; // 0=Mon, 1=Tue, ... 4=Fri
+    for (let d = 1; d <= 30; d++) {
+        // dow in 0=Mon..6=Sun
+        const dow = (sep1dow + d - 1) % 7;
+        if (dow <= 4) { // weekday
+            const col = dow; // 0=Mon..4=Fri
+            const entry = aseoMap[d] || null;
+            sep2026.push({ day: d, col, entry });
+        }
+    }
+
+    // Build grid rows (each row = one week, Mon..Fri)
+    // Figure out which week each day belongs to
+    // week number: floor((d-1 + sep1dow_0based) / 7) + 1
+    // Actually, let's just build row by row
+    // Sep 1 = Tue col=1. Week 1: cols 0(empty), 1(Sep1), 2(Sep2), 3(Sep3), 4(Sep4)
+    // Sep 1 is NOT in aseo (it's just a Tue without assignment) but it's in the grid
+
+    // Build rows: each row has 5 slots (Mon-Fri).
+    // Slot index: week * 5 + col
+    const slots = {}; // slotIndex -> day
+    for (let d = 1; d <= 30; d++) {
+        const dow = (sep1dow + d - 1) % 7; // 0=Mon..6=Sun
+        if (dow <= 4) {
+            // which row? count working days from start
+            // rows: row 0 starts at Mon Sep 7 (week 1 proper) but Sep 1 is Tue
+            // Let's just assign: slot = (d - 1 + sep1dow) for Mon-side counting
+            // Simpler: anchor Mon Sep 7 = row 1, Mon Sep 14 = row 2, etc.
+            // Sep 1-4 = row 0 (partial week with offset 1)
+            // Actually let's compute: # of Mondays passed
+        }
+    }
+
+    // Simplest approach: build a flat array of grid cells with empty spacers
+    const gridCells = [];
+    // Sep 2026: first day is Tuesday, so add 1 empty Monday
+    gridCells.push({ empty: true, label: '' }); // Mon Sep blank
+
+    for (let d = 1; d <= 30; d++) {
+        const dow = (sep1dow + d - 1) % 7; // 0=Mon..4=Fri, 5=Sat, 6=Sun
+        if (dow === 5) {
+            // Saturday: skip, and next Monday needs spacer? No - just skip weekends
+            // Actually we need to insert 0 spacers since grid is Mon-Fri only
+            continue;
+        }
+        if (dow === 6) {
+            // Sunday: skip
+            continue;
+        }
+        // It's a weekday
+        const entry = aseoMap[d] || null;
+        gridCells.push({ empty: false, day: d, col: dow, entry, wd: weekdayLabels[dow] });
+    }
+
+    // Now render into 5-col grid
+    const body = document.getElementById('calendar-body');
+
+    gridCells.forEach(cell => {
+        const div = document.createElement('div');
+
+        if (cell.empty) {
+            div.className = 'day-card empty';
+            body.appendChild(div);
+            return;
+        }
+
+        const isToday = cell.day === todayDay;
+        div.className = 'day-card' + (isToday ? ' today' : '');
+
+        let studentsHTML = '';
+        if (cell.entry) {
+            studentsHTML = '<ul class="student-list">' +
+                cell.entry.students.map(s =>
+                    '<li class="student-item"><span class="student-dot"></span>' + s + '</li>'
+                ).join('') +
+                '</ul>';
+        } else {
+            studentsHTML = '<span style="font-size:0.75rem;color:var(--muted);font-style:italic;">Sin asignacion</span>';
+        }
+
+        div.innerHTML =
+            '<i class="fa-solid fa-broom aseo-icon"></i>' +
+            (isToday ? '<div class="today-chip">HOY</div>' : '') +
+            '<div class="day-num">' + cell.day + '</div>' +
+            '<div class="weekday-label">' + WD_NAMES[cell.wd] + '</div>' +
+            '<div class="divider"></div>' +
+            studentsHTML;
+
+        body.appendChild(div);
+
+        // Show today banner
+        if (isToday && cell.entry) {
+            const banner = document.getElementById('today-banner');
+            banner.style.display = 'flex';
+            document.getElementById('banner-text').innerHTML =
+                'Hoy, <strong>' + WD_NAMES[cell.wd] + ' ' + cell.day + ' de septiembre</strong>, les corresponde aseo a: <strong>' +
+                cell.entry.students.join(', ') + '</strong>.';
+        }
+    });
+    </script>
+</body>
+</html>
