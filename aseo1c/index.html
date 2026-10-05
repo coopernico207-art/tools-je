@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aseo TI1C - Septiembre 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <title>Aseo TI1C - Octubre 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
@@ -295,10 +295,10 @@
         <div class="header-icon">&#129529;</div>
         <div class="header-text">
             <h1>Calendario de Aseo</h1>
-            <p>Grupo TI1C &bull; Septiembre 2026 &bull; UTTN</p>
+            <p>Grupo TI1C &bull; Octubre 2026 &bull; UTTN</p>
         </div>
         <div class="header-badge">
-            <div class="badge-num">21</div>
+            <div class="badge-num">22</div>
             <div class="badge-label">turnos</div>
         </div>
     </div>
@@ -337,119 +337,64 @@
 
     <!-- FOOTER -->
     <div class="cal-footer">
-        <div>Calendario de Aseo &bull; Grupo TI1C &bull; UTTN Sep-Dic 2026</div>
+        <div>Calendario de Aseo &bull; Grupo TI1C &bull; UTTN Octubre 2026</div>
         <div>Creado por <strong>JE-Productions</strong> &bull; Herramienta No Oficial</div>
     </div>
 
     <script>
-    // Schedule data from PDF
-    // Format: [day-of-month-sep2026, weekday-abbr, [student names]]
+    // Schedule data from PDF (October 2026)
     const ASEO = [
-        { day: 2,  wd: 'Mi', students: ['Gael Amaya', 'Regina Avalos', 'Derek Bernadi'] },
-        { day: 3,  wd: 'J',  students: ['Reyna Campos', 'Jehiel Castaneda', 'Alexis Velazquez'] },
-        { day: 4,  wd: 'V',  students: ['Luis Cruz', 'Nancy Florencia', 'Emmanuel Hernandez'] },
-        { day: 7,  wd: 'L',  students: ['Rosse Meza', 'Alan Morales', 'Ethan Volcan'] },
-        { day: 8,  wd: 'M',  students: ['Asael Hernandez', 'Aron Iniguez', 'Brayan Lopez'] },
-        { day: 9,  wd: 'Mi', students: ['Jair Garcia', 'Josue Peque', 'Maximiliano Santana'] },
-        { day: 10, wd: 'J',  students: ['Lidia Mtz', 'Angel Mateos', 'Isabela Olarte'] },
-        { day: 11, wd: 'V',  students: ['Abigail Ostos', 'Eduardo Perez', 'Ximena Reyes'] },
-        { day: 14, wd: 'L',  students: ['Alberto Gamez', 'Lesly Gonzalez', 'Alfredo Sosa'] },
-        { day: 15, wd: 'M',  students: ['Dylan Rosales', 'Kimberly Castillo', 'Frida Varela'] },
-        { day: 16, wd: 'Mi', students: ['Gael Amaya', 'Regina Avalos', 'Derek Bernadi'] },
-        { day: 17, wd: 'J',  students: ['Reyna Campos', 'Jehiel Castaneda', 'Alexis Velazquez'] },
-        { day: 18, wd: 'V',  students: ['Luis Cruz', 'Nancy Florencia', 'Emmanuel Hernandez'] },
-        { day: 21, wd: 'L',  students: ['Rosse Meza', 'Alan Morales', 'Ethan Volcan'] },
-        { day: 22, wd: 'M',  students: ['Asael Hernandez', 'Aron Iniguez', 'Brayan Lopez'] },
-        { day: 23, wd: 'Mi', students: ['Jair Garcia', 'Josue Peque', 'Maximiliano Santana'] },
-        { day: 24, wd: 'J',  students: ['Lidia Mtz', 'Angel Mateos', 'Isabela Olarte'] },
-        { day: 25, wd: 'V',  students: ['Abigail Ostos', 'Eduardo Perez', 'Ximena Reyes'] },
-        { day: 28, wd: 'L',  students: ['Alberto Gamez', 'Lesly Gonzalez', 'Alfredo Sosa'] },
-        { day: 29, wd: 'M',  students: ['Dylan Rosales', 'Kimberly Castillo', 'Frida Varela'] },
-        { day: 30, wd: 'Mi', students: ['Gael Amaya', 'Regina Avalos', 'Derek Bernadi'] },
+        { day: 1,  wd: 'J',  students: ['Reyna Campos', 'Jehiel Castañeda', 'Alexis Velázquez'] },
+        { day: 2,  wd: 'V',  students: ['Luis Cruz', 'Nancy Florencia', 'Emmanuel Hernández'] },
+        { day: 5,  wd: 'L',  students: ['Rosse Meza', 'Alan Morales', 'Ethan Volcan'] },
+        { day: 6,  wd: 'M',  students: ['Asael Hernández', 'Aron Iñiguez', 'Brayan López'] },
+        { day: 7,  wd: 'Mi', students: ['Jair García', 'Josue Peque', 'Maximiliano Santana'] },
+        { day: 8,  wd: 'J',  students: ['Lidia Mtz', 'Angel Mateos', 'Isabela Olarte'] },
+        { day: 9,  wd: 'V',  students: ['Abigail Ostos', 'Eduardo Perez', 'Ximena Reyes'] },
+        { day: 12, wd: 'L',  students: ['Alberto Gamez', 'Lesly Gonzalez', 'Alfredo Sosa'] },
+        { day: 13, wd: 'M',  students: ['Dylan Rosales', 'Kimberly Castillo', 'Frida Varela'] },
+        { day: 14, wd: 'Mi', students: ['Gael Amaya', 'Regina Avalos', 'Derek Bernadi'] },
+        { day: 15, wd: 'J',  students: ['Reyna Campos', 'Jehiel Castañeda', 'Alexis Velázquez'] },
+        { day: 16, wd: 'V',  students: ['Luis Cruz', 'Nancy Florencia', 'Emmanuel Hernández'] },
+        { day: 19, wd: 'L',  students: ['Rosse Meza', 'Alan Morales', 'Ethan Volcan'] },
+        { day: 20, wd: 'M',  students: ['Asael Hernández', 'Aron Iñiguez', 'Brayan López'] },
+        { day: 21, wd: 'Mi', students: ['Jair García', 'Josue Peque', 'Maximiliano Santana'] },
+        { day: 22, wd: 'J',  students: ['Lidia Mtz', 'Angel Mateos', 'Isabela Olarte'] },
+        { day: 23, wd: 'V',  students: ['Abigail Ostos', 'Eduardo Perez', 'Ximena Reyes'] },
+        { day: 26, wd: 'L',  students: ['Alberto Gamez', 'Lesly Gonzalez', 'Alfredo Sosa'] },
+        { day: 27, wd: 'M',  students: ['Dylan Rosales', 'Kimberly Castillo', 'Frida Varela'] },
+        { day: 28, wd: 'Mi', students: ['Gael Amaya', 'Regina Avalos', 'Derek Bernadi'] },
+        { day: 29, wd: 'J',  students: ['Reyna Campos', 'Jehiel Castañeda', 'Alexis Velázquez'] },
+        { day: 30, wd: 'V',  students: ['Luis Cruz', 'Nancy Florencia', 'Emmanuel Hernández'] },
     ];
 
     const WD_NAMES = { L:'Lunes', M:'Martes', Mi:'Miercoles', J:'Jueves', V:'Viernes' };
 
-    // Sep 1 2026 is a Tuesday (M) -> grid offset: Tue = col index 1 (0-based)
-    // Mon=0, Tue=1, Wed=2, Thu=3, Fri=4
-    // Sep 1 = Tuesday, offset = 1 empty slots before day 1
-    // Build a map of assigned days
     const aseoMap = {};
     ASEO.forEach(a => { aseoMap[a.day] = a; });
 
     const today = new Date();
-    const todayDay = (today.getMonth() === 8 && today.getFullYear() === 2026) ? today.getDate() : null;
+    // Check if current month is October 2026 (Month index 9)
+    const todayDay = (today.getMonth() === 9 && today.getFullYear() === 2026) ? today.getDate() : (today.getMonth() === 9 ? today.getDate() : today.getDate());
 
-    // Days in Sep: 1-30; Sep 1 is Tuesday (col index 1 in Mon-Fri grid)
-    // So: day 1 -> Tuesday slot; day 2 -> Wednesday; ...
-    // Grid cells: each row has Mon..Fri
-    // Sep 1 = Tuesday => offset 1 (Monday before is empty)
-    // Sep 2 = Wednesday, Sep 3 = Thu, Sep 4 = Fri
-    // Sep 5-6 = weekend (skip), Sep 7 = Mon, etc.
+    const weekdayLabels = ['L','M','Mi','J','V'];
 
-    // Build grid cells: only weekdays in Sep 2026
-    // Sep 1 is Tue. Let's enumerate all weekdays in Sep 2026:
-    const cells = []; // {day, col, hasData, students, wd}
+    // Oct 1 2026 is a Thursday (col index 3: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4)
+    const oct1dow = 3;
 
-    // Sep 2026 weekday mapping
-    const sep2026 = [];
-    const weekdayLabels = ['L','M','Mi','J','V']; // Mon=0..Fri=4
-    // Sep 1 2026 = Tuesday = index 1
-    const sep1dow = 1; // 0=Mon, 1=Tue, ... 4=Fri
-    for (let d = 1; d <= 30; d++) {
-        // dow in 0=Mon..6=Sun
-        const dow = (sep1dow + d - 1) % 7;
-        if (dow <= 4) { // weekday
-            const col = dow; // 0=Mon..4=Fri
-            const entry = aseoMap[d] || null;
-            sep2026.push({ day: d, col, entry });
-        }
-    }
-
-    // Build grid rows (each row = one week, Mon..Fri)
-    // Figure out which week each day belongs to
-    // week number: floor((d-1 + sep1dow_0based) / 7) + 1
-    // Actually, let's just build row by row
-    // Sep 1 = Tue col=1. Week 1: cols 0(empty), 1(Sep1), 2(Sep2), 3(Sep3), 4(Sep4)
-    // Sep 1 is NOT in aseo (it's just a Tue without assignment) but it's in the grid
-
-    // Build rows: each row has 5 slots (Mon-Fri).
-    // Slot index: week * 5 + col
-    const slots = {}; // slotIndex -> day
-    for (let d = 1; d <= 30; d++) {
-        const dow = (sep1dow + d - 1) % 7; // 0=Mon..6=Sun
-        if (dow <= 4) {
-            // which row? count working days from start
-            // rows: row 0 starts at Mon Sep 7 (week 1 proper) but Sep 1 is Tue
-            // Let's just assign: slot = (d - 1 + sep1dow) for Mon-side counting
-            // Simpler: anchor Mon Sep 7 = row 1, Mon Sep 14 = row 2, etc.
-            // Sep 1-4 = row 0 (partial week with offset 1)
-            // Actually let's compute: # of Mondays passed
-        }
-    }
-
-    // Simplest approach: build a flat array of grid cells with empty spacers
     const gridCells = [];
-    // Sep 2026: first day is Tuesday, so add 1 empty Monday
-    gridCells.push({ empty: true, label: '' }); // Mon Sep blank
+    // Spacers for Mon, Tue, Wed before Oct 1
+    for (let i = 0; i < oct1dow; i++) {
+        gridCells.push({ empty: true, label: '' });
+    }
 
-    for (let d = 1; d <= 30; d++) {
-        const dow = (sep1dow + d - 1) % 7; // 0=Mon..4=Fri, 5=Sat, 6=Sun
-        if (dow === 5) {
-            // Saturday: skip, and next Monday needs spacer? No - just skip weekends
-            // Actually we need to insert 0 spacers since grid is Mon-Fri only
-            continue;
-        }
-        if (dow === 6) {
-            // Sunday: skip
-            continue;
-        }
-        // It's a weekday
+    for (let d = 1; d <= 31; d++) {
+        const dow = (oct1dow + d - 1) % 7; // 0=Mon..4=Fri, 5=Sat, 6=Sun
+        if (dow === 5 || dow === 6) continue; // Skip weekends
         const entry = aseoMap[d] || null;
         gridCells.push({ empty: false, day: d, col: dow, entry, wd: weekdayLabels[dow] });
     }
 
-    // Now render into 5-col grid
     const body = document.getElementById('calendar-body');
 
     gridCells.forEach(cell => {
@@ -485,12 +430,11 @@
 
         body.appendChild(div);
 
-        // Show today banner
         if (isToday && cell.entry) {
             const banner = document.getElementById('today-banner');
             banner.style.display = 'flex';
             document.getElementById('banner-text').innerHTML =
-                'Hoy, <strong>' + WD_NAMES[cell.wd] + ' ' + cell.day + ' de septiembre</strong>, les corresponde aseo a: <strong>' +
+                'Hoy, <strong>' + WD_NAMES[cell.wd] + ' ' + cell.day + ' de octubre</strong>, les corresponde aseo a: <strong>' +
                 cell.entry.students.join(', ') + '</strong>.';
         }
     });
